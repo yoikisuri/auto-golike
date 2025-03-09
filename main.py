@@ -21,16 +21,41 @@ class GolikeApi:
         }
 
     async def get_user(self):
-        url = "/users/me"
+        url = "users/me"
         async with aiohttp.ClientSession() as session:
             return await fetch(session, url, headers=self.headers)
     async def get_tiktok_account(self):
         url = "tiktok-account"
         async with aiohttp.ClientSession() as session:
             return await fetch(session, url, headers=self.headers)
+    
+    async def get_list_task(self, account_id):
+        url = f"advertising/publishers/tiktok/jobs?account_id={account_id}&data=null"
+        async with aiohttp.ClientSession() as session:
+            return await fetch(session, url, headers=self.headers)
 
+    async def receive_money(self, ads_id, account_id, object_id, type):
+        url = f"advertising/publishers/tiktok/complete-jobs"
+        json_data = {
+            'ads_id' : ads_id,
+            'account_id' : account_id,
+            'object_id' : f"{object_id}",
+            'type': type,
+        }
+        async with aiohttp.ClientSession() as session:
+            return await fetch(session, url, method="POST", data=json_data, headers=self.headers)
 
-
+    async def skip_task(self, ads_id, account_id, object_id, type):
+        url = f"advertising/publishers/tiktok/skip-jobs"
+        json_data = {
+            'ads_id' : ads_id,
+            'account_id' : account_id,
+            'object_id' : f"{object_id}",
+            'type': type,
+        }
+        async with aiohttp.ClientSession() as session:
+            return await fetch(session, url, method="POST", data=json_data, headers=self.headers)
+        
 class GolikeClient:
     def __init__(self) -> None:
         self.auth = None
@@ -77,18 +102,68 @@ class GolikeClient:
             result = (await GolikeApi(self.auth).get_tiktok_account())
             print(result)
             for index, account in enumerate(result["data"], 1):
+                self.account_id.append(account['id'])
                 print(f"{index}, {account['nickname']}")
             choose = int(input("Chọn tài khoản chạy tool: "))
             if 1 <= choose <= len(result["data"]):
+                print(f"Bạn đã chọn tài khoản tiktok: {self.account_id[choose - 1]}")
                 await asyncio.sleep(2)
+                self.choose = choose
                 break
             else:
                 print("Lựa chọn không hợp lệ, Hãy chọn lại!")
                 await asyncio.sleep(2)
+    async def complete_task(self):
+        while True:
+            os.system("clear")
+            
+            account_id = self.account_id[self.choose - 1]
+            result = (await GolikeApi(self.auth).get_list_task(account_id))
+            print(result)
+            
+            if result["status"] == 200:
+                url = result["data"]["link"]
+                ads_id = result["data"]["id"]
+                object_id = result["data"]["object_id"]
+                type = result["data"]["type"]
+
+                print(ads_id, object_id, type)
+                os.system(f"termux-open {url}")
+
+                for countdown in range(10, -1, -1):
+                    print(f"Vui lòng chờ {countdown} giây nữa để tiếp tục!", end=" \r")
+                    await asyncio.sleep(1)
+
+                result = (await GolikeApi(self.auth).receive_money(ads_id, object_id, type, account_id))
+                print(result)
+
+                # 
+                if result["status"] == 200:
+                    print(f"Nhận tiền thành công +{result['data']['prices']}đ")
+                    await asyncio.sleep(2)
+                else:
+                    print("Nhận tiền thất bại, đang thử lại...", end="\r")
+
+                    await asyncio.sleep(2)
+                    result = (await GolikeApi(self.auth).receive_money(ads_id, object_id, type, account_id))
+                    print(result)
+
+                    if result["status"] == 200:
+                        print(f"Nhận tiền thành công +{result['data']['prices']}đ")
+                        await asyncio.sleep(2)
+                    else:
+                        print("Thất bại, đang skip nhiệm vụ!")
+                        result = (await GolikeApi(self.auth).skip_task(ads_id, object_id, account_id, type))
+                        print(result)
+
+                        await asyncio.sleep(2)
+
+
 
     async def run(self):
         await self.login()
         await self.account()
+        await self.complete_task()
 
 
 if __name__ == "__main__":

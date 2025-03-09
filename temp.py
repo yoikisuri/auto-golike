@@ -18,7 +18,7 @@ def main():
             "authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC9nYXRld2F5LmdvbGlrZS5uZXRcL2FwaVwvbG9naW4iLCJpYXQiOjE3NDEzNTA4NDUsImV4cCI6MTc3Mjg4Njg0NSwibmJmIjoxNzQxMzUwODQ1LCJqdGkiOiJsZTROS1htdE53RjA3MTFLIiwic3ViIjoyOTYxMzI1LCJwcnYiOiJiOTEyNzk5NzhmMTFhYTdiYzU2NzA0ODdmZmYwMWUyMjgyNTNmZTQ4In0.Nrxg7qur9HOk2Fw1Zx60P5x1emR4ABH9lONxIEL24UA",
             "content-type": "application/json;charset=utf-8",
             "t": "VFZSak1FMVVUVEZOUkd0NFRrRTlQUT09",
-            "user-agent": random.choice(open("user_agent.txt", "r").readlines()).strip()
+            "user-agent": random.choice(open("useragent.txt", "r").readlines()).strip()
         }
 
         user_data = requests.get(
