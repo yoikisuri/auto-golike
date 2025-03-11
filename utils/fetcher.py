@@ -8,7 +8,7 @@ class SnapChat:
         self.auth = auth
         self.headers = {
             "accept-language": "vi-VN,vi;q=0.9,en-US;q=0.8,en;q=0.7",
-            "authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC9nYXRld2F5LmdvbGlrZS5uZXRcL2FwaVwvbG9naW4iLCJpYXQiOjE3NDEzNTA4NDUsImV4cCI6MTc3Mjg4Njg0NSwibmJmIjoxNzQxMzUwODQ1LCJqdGkiOiJsZTROS1htdE53RjA3MTFLIiwic3ViIjoyOTYxMzI1LCJwcnYiOiJiOTEyNzk5NzhmMTFhYTdiYzU2NzA0ODdmZmYwMWUyMjgyNTNmZTQ4In0.Nrxg7qur9HOk2Fw1Zx60P5x1emR4ABH9lONxIEL24UA",
+            "authorization": self.auth,
             "content-type": "application/json;charset=utf-8",
             "t": "VFZSak1FMVVXWGxOVkZFeFRYYzlQUT09",
             "user-agent": random.choice(open("useragent.txt", "r").readlines()).strip(),
