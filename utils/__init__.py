@@ -1,3 +1,2 @@
-from .delay import countdown
-
-from .fetcher import fetch
+from .countdown import *
+from .fetcher import *
