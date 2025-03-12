@@ -26,11 +26,11 @@ class SnapChat:
             async with session.request("GET", url, headers=self.headers) as response:
                 return await response.json()
 
-    async def job(self):
+    async def job(self, account_id):
         async with aiohttp.ClientSession() as session:
             url = "https://gateway.golike.net/api/advertising/publishers/snapchat/jobs"
             params = {
-                "account_id": "2543",
+                "account_id": account_id,
             }
             async with session.request(
                 "GET", url, params=params, headers=self.headers

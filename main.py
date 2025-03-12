@@ -71,7 +71,8 @@ class GolikeClient:
             )
             for i in range(int(count)):
                 try:
-                    jobs = await self.client.job()
+                    jobs = await self.client.job(self.account_id)
+                    # print(jobs)
 
                     if jobs["status"] == 200:
                         url = jobs["data"]["link"]
