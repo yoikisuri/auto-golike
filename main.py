@@ -70,42 +70,48 @@ class GolikeClient:
                 "Nhập số job bạn muốn làm ( nhập 100 thì tới job 100 sẽ dừng tool ): "
             )
             for i in range(int(count)):
-                jobs = await self.client.job()
+                try:
+                    jobs = await self.client.job()
 
-                if jobs["status"] == 200:
-                    url = jobs["data"]["link"]
-                    ads_id = jobs["data"]["id"]
-                    object_id = jobs["data"]["object_id"]
-                    type_ = jobs["data"]["type"]
+                    if jobs["status"] == 200:
+                        url = jobs["data"]["link"]
+                        ads_id = jobs["data"]["id"]
+                        object_id = jobs["data"]["object_id"]
+                        type_ = jobs["data"]["type"]
 
-                    print(f"Nhiệm vụ: {type_.upper()} / url job: {url}")
+                        print(f"Nhiệm vụ: {type_.upper()} / url job: {url}")
 
-                    os.system(f"termux-open {url}")
+                        os.system(f"termux-open {url}")
 
-                    countdown(10)
+                        countdown(10)
 
-                    receive = await self.client.complete(self.account_id, ads_id)
+                        receive = await self.client.complete(self.account_id, ads_id)
 
-                    if receive["status"] == 200:
-                        self.total += int(receive["data"]["prices"])
-                        print(
-                            f"{i} / Thành công! +{receive['data']['prices']}Đ / Tổng: {self.total}"
-                        )
-                    else:
-                        for i in range(5):
-                            print(f"Nhận thất bại! Đang thử lại lần {i}", end="\r")
-                            receive = await self.client.complete(
-                                self.account_id, ads_id
+                        if receive["status"] == 200:
+                            self.total += int(receive["data"]["prices"])
+                            print(
+                                f"{i} / Thành công! +{receive['data']['prices']}Đ / Tổng: {self.total}"
                             )
-                            if receive["status"] == 200:
-                                self.total += receive["data"]["prices"]
-                                print(
-                                    f"{i} / Thành công! +{receive['data']['prices']}Đ / Tổng: {self.total}"
-                                )
-                                break
                         else:
-                            skip = await self.client.skip_job(self.account_id, ads_id, object_id)
-                            print(skip)
+                            for i in range(5):
+                                print(f"Nhận thất bại! Đang thử lại lần {i}", end="\r")
+                                receive = await self.client.complete(
+                                    self.account_id, ads_id
+                                )
+                                if receive["status"] == 200:
+                                    self.total += receive["data"]["prices"]
+                                    print(
+                                        f"{i} / Thành công! +{receive['data']['prices']}Đ / Tổng: {self.total}"
+                                    )
+                                    break
+                            else:
+                                skip = await self.client.skip_job(
+                                    self.account_id, ads_id, object_id
+                                )
+                                print(skip)
+                except:
+                    print("Nhận job thất bại, đang thử lại...")
+                    await asyncio.sleep(2)
 
 
 if __name__ == "__main__":
